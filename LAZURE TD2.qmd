@@ -12,7 +12,7 @@ library(tidyverse)
 library(ggplot2)
 ```
 ```{r}
-data_set <- read.csv("C:/Users/lydie/Downloads/grades (1).csv")
+data_set <- read.csv("grades(1).csv")
 ```
 
 ## Simple analysis
@@ -127,3 +127,21 @@ ggplot(grades_per_student_SSWM, aes(x = group, y = num_grades, fill = group)) +
   geom_point() 
 ```
 There does not seem to be a clear pattern between the two variables. 
+
+## Grade analysis
+
+#12
+```{r}
+average_grades <- data_set %>%
+  filter(course=="Art and Expression in a Post-Apocalyptic World" | course=="Combat Tactics and Self-Defense") %>%
+  group_by(id, group, course) %>%
+  summarise(Average_Grade = mean(grade, na.rm = TRUE))
+
+average_grades
+
+pivoted_grades <- average_grades %>%
+  pivot_wider(names_from = course, values_from = Average_Grade)
+
+```
+
+#13
