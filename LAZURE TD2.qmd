@@ -244,4 +244,78 @@ ggplot(filtered_data, aes(x = `Art and Expression in a Post-Apocalyptic World`, 
   theme_minimal()
 ```
 #16
+```{r}
+# Assuming 'data_set' contains the original dataset with columns 'id', 'group', 'course', and 'grade'
+
+# Calculate the average grade for each course for each student
+average_grades <- data_set %>%
+  group_by(id, group, course) %>%
+  summarise(avg_grade = mean(grade, na.rm = TRUE))
+
+# Calculate the average of the averages for each student
+final_grades <- average_grades %>%
+  group_by(id, group) %>%
+  summarise(final_grade = mean(avg_grade))
+
+# Sort the data frame in decreasing order of final grade
+final_grades_sorted <- final_grades %>%
+  arrange(desc(final_grade))
+
+# Display the first five rows of the sorted data frame
+head(final_grades_sorted, 5)
+```
+#17
+```{r}
+# Perform ANOVA to test for differences in final grades between groups
+anova_result <- aov(final_grade ~ group, data = final_grades_sorted)
+summary(anova_result)
+```
+#18
+
+```{r}
+trimester_averages <- final_grades_sorted %>%
+  group_by(id, group) %>%
+  summarise(trimester_avg = mean(final_grade))
+
+# Check conditions for passing the year
+pass_status <- trimester_averages %>%
+  group_by(id) %>%
+  summarise(pass = all(average_grades$Average_Grade >= 5) & all(trimester_avg >= 10))
+
+# Merge pass status with final grades
+final_data <- merge(final_grades_sorted, pass_status, by = "id")
+
+# Display the final data frame with pass status
+final_data
+```
+#19
+```{r}
+# Assuming 'final_data' contains the data frame with columns 'id', 'group', 'final_grade', and 'pass'
+
+# Filter students who do not pass the year but have a final grade >= 10
+not_pass_but_final_grade_gt_10 <- final_data %>%
+  filter(!pass & final_grade >= 10)
+
+# Count the number of students who meet this condition
+num_students_not_pass_gt_10 <- nrow(not_pass_but_final_grade_gt_10)
+
+# Display the number of students who do not pass but have a final grade >= 10
+print(num_students_not_pass_gt_10)
+```
+```{r}
+pass_rate_per_group <- final_data %>%
+  group_by(group) %>%
+  summarise(pass_rate = mean(pass) * 100)
+
+# Create a bar plot to represent pass rates graphically
+library(ggplot2)
+
+ggplot(pass_rate_per_group, aes(x = group, y = pass_rate)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Pass Rate per Group",
+       x = "Group",
+       y = "Pass Rate (%)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
 
