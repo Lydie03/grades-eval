@@ -12,7 +12,7 @@ library(tidyverse)
 library(ggplot2)
 ```
 ```{r}
-data_set <- read.csv("grades(1).csv")
+data_set <- read.csv("grades (1).csv")
 ```
 
 ## Simple analysis
@@ -186,4 +186,62 @@ correlation_by_group <- pivoted_grades3 %>%
   correlation_by_group
 
 ```
+#15
+
+```{r}
+library(dplyr)
+
+# Filter the data for the specified courses
+filtered_data <- data_set %>%
+  filter(course %in% c("Art and Expression in a Post-Apocalyptic World", "Survival Skills and Wilderness Medicine"))
+
+# Calculate the correlation per group
+correlation_by_group <- pivoted_grades3 %>%
+  select(`Art and Expression in a Post-Apocalyptic World`, `Survival Skills and Wilderness Medicine`, group) %>%
+  group_by(group) %>%
+  summary(cor(pivoted_grades3$`Art and Expression in a Post-Apocalyptic World`, pivoted_grades3$`Survival Skills and Wilderness Medicine`))
+
+correlation_by_group <- pivoted_grades3 %>%
+  group_by(group) %>%
+  summarise(correlation = cor(`Art and Expression in a Post-Apocalyptic World`, `Survival Skills and Wilderness Medicine`, use = "pairwise.complete.obs"))
+
+correlation_by_group <- pivoted_grades3 %>%
+  group_by(group) %>%
+  summarise(correlation = cor(`Art and Expression in a Post-Apocalyptic World`, `Survival Skills and Wilderness Medicine`, use = "pairwise.complete.obs"))
+
+# Sort the groups by correlation in descending order
+correlation_by_group <- correlation_by_group[order(-correlation_by_group$correlation), ]
+
+# Get the first five groups
+first_five_groups <- correlation_by_group$group[1:5]
+
+# Display the first five groups and their correlations
+print(correlation_by_group[1:5, ])
+
+# Assuming 'pivoted_grades3' contains the pivoted data with average grades
+
+# Calculate the correlation between the two courses for each group
+correlation_by_group <- pivoted_grades3 %>%
+  group_by(group) %>%
+  summarise(correlation = cor(`Art and Expression in a Post-Apocalyptic World`, `Survival Skills and Wilderness Medicine`, use = "pairwise.complete.obs"))
+
+# Sort the groups by correlation in descending order
+correlation_by_group <- correlation_by_group[order(-abs(correlation_by_group$correlation)), ]
+
+# Get the names of the top 5 correlated groups
+top_correlated_groups <- correlation_by_group$group[1:5]
+
+# Filter the data to include only the top 5 correlated groups
+filtered_data <- pivoted_grades3 %>%
+  filter(group %in% top_correlated_groups)
+
+# Create the scatter plot with the filtered data
+ggplot(filtered_data, aes(x = `Art and Expression in a Post-Apocalyptic World`, y = `Survival Skills and Wilderness Medicine`)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(title = "Average Grades Comparison for Top Correlated Groups",
+       x = "Art and Expression in a Post-Apocalyptic World",
+       y = "Survival Skills and Wilderness Medicine") +
+  theme_minimal()
+```
+#16
 
