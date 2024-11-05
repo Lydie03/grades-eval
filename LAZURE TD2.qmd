@@ -76,3 +76,35 @@ ggplot(data = average_grades, aes(x = as.factor(trimester), y = avg_grade, fill 
 ## Attendance analysis
 
 #8
+```{r}
+grades_per_student <- data_set %>%
+  distinct(id, .keep_all = TRUE) %>% 
+  group_by(id) %>%
+  summarise(
+    min_grade = min(grade, na.rm = TRUE),
+    max_bpm = max(grade, na.rm = TRUE),
+    mean_bpm = mean(grade, na.rm = TRUE),
+    median_bpm = median(grade, na.rm = TRUE),
+    grades_count = n()
+  )
+
+grades_per_student
+
+knitr::kable(grades_per_student, format = "markdown")
+```
+```{r}
+library(knitr)
+
+
+# Create a data frame with the statistics
+stats_df <- data.frame(
+  Minimum = min_grades,
+  Maximum = max_grades,
+  Average = avg_grades,
+  Median = median_grades
+)
+
+# Display the statistics in a markdown table
+knitr::kable(stats_df, format = "markdown")
+```
+
