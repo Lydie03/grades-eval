@@ -1,0 +1,78 @@
+---
+title: "Lazure - graded lab2"
+format: html
+---
+
+## Loading the dataset
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(ggplot2)
+```
+```{r}
+data_set <- read.csv("C:/Users/lydie/Downloads/grades (1).csv")
+```
+
+## Simple analysis
+
+#2
+The data set contains `length(data_set$grade)`grades. 
+
+#3
+```{r}
+data_set %>% distinct(id) %>% count()
+```
+
+There are `data_set %>% distinct(id) %>% count()`students in the dataset. 
+
+#4
+```{r}
+students <- data_set %>%
+  distinct(id, .keep_all = TRUE) %>%  
+  select(id = id, group = group)  
+
+head(students)
+```
+
+#5
+```{r}
+ggplot(data = students, aes(x = group)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Number of Students per Group", x = "Group", y = "Number of Students") +
+  theme_minimal()
+```
+
+#6
+
+```{r}
+post_apocalyptic_data <- data_set %>%
+  filter(course == "Post-Apocalyptic History and Archaeology")
+
+average_grades <- post_apocalyptic_data %>%
+  group_by(group) %>%
+  summarise(avg_grade = mean(grade, na.rm = TRUE))
+
+ggplot(data = average_grades, aes(x = group, y = avg_grade)) +
+  geom_col(fill = "skyblue", color = "black") +
+  labs(title = "Average Grades in Post-Apocalyptic History and Archaeology by Group", x = "Group", y = "Average Grade") +
+  theme_minimal()
+```
+#7
+
+```{r}
+average_grades <- post_apocalyptic_data %>%
+  group_by(trimester) %>%
+  summarise(avg_grade = mean(grade, na.rm = TRUE))
+
+ggplot(data = average_grades, aes(x = as.factor(trimester), y = avg_grade, fill = as.factor(trimester))) +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +
+  labs(title = "Average Grades in Post-Apocalyptic History and Archaeology by Trimester",
+       x = "Trimester", y = "Average Grade") +
+  theme_minimal()
+```
+
+## Attendance analysis
+
+#8
