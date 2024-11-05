@@ -77,6 +77,7 @@ ggplot(data = average_grades, aes(x = as.factor(trimester), y = avg_grade, fill 
 
 #8
 ```{r}
+library(knitr)
 grades_per_student <- data_set %>%
   distinct(id, .keep_all = TRUE) %>% 
   group_by(id) %>%
@@ -92,19 +93,37 @@ grades_per_student
 
 knitr::kable(grades_per_student, format = "markdown")
 ```
+
+#9
 ```{r}
-library(knitr)
+grades_per_student_SSWM <- data_set %>%
+  filter(course=="Survival Skills and Wilderness Medicine") %>%
+  group_by(id, group) %>%
+  summarise(num_grades = n())
 
+head(grades_per_student_SSWM)
+```
+#10
+```{r}
+same_num_grades_count <- grades_per_student_SSWM %>%
+  group_by(num_grades) %>%
+  summarise(num_students = n()) %>%
+  filter(num_students > 1)  
 
-# Create a data frame with the statistics
-stats_df <- data.frame(
-  Minimum = min_grades,
-  Maximum = max_grades,
-  Average = avg_grades,
-  Median = median_grades
-)
+ggplot(same_num_grades_count, aes(x = num_grades, y = num_students)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Number of Students with the Same Number of Grades",
+       x = "Number of Grades",
+       y = "Number of Students") +
+  theme_minimal()
 
-# Display the statistics in a markdown table
-knitr::kable(stats_df, format = "markdown")
+same_num_grades_count
 ```
 
+#11
+
+```{r}
+ggplot(grades_per_student_SSWM, aes(x = group, y = num_grades, fill = group)) +
+  geom_point() 
+```
+There does not seem to be a clear pattern between the two variables. 
