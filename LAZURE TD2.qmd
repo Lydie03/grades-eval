@@ -141,7 +141,49 @@ average_grades
 
 pivoted_grades <- average_grades %>%
   pivot_wider(names_from = course, values_from = Average_Grade)
+pivoted_grades
 
 ```
 
 #13
+```{r}
+average_grades2 <- data_set %>%
+  filter(course=="Renewable Energy and Sustainable Living" | course=="Radiation Ecology and Environmental Science") %>%
+  group_by(id, group, course) %>%
+  summarise(Average_Grade2 = mean(grade, na.rm = TRUE))
+
+average_grades2
+
+pivoted_grades2 <- average_grades2 %>%
+  pivot_wider(names_from = course, values_from = Average_Grade2)
+pivoted_grades2
+
+
+
+ggplot(pivoted_grades2, aes(x = `Radiation Ecology and Environmental Science`, y = `Renewable Energy and Sustainable Living`)) +
+  geom_point(size = 3, alpha=0.7) +
+  labs(title = "Average Grades Comparison",
+       x = "Radiation Ecology and Environmental Science",
+       y = "Renewable Energy and Sustainable Living") +
+  theme_minimal()
+```
+#14
+```{r}
+average_grades3 <- data_set %>%
+  filter(course %in% c("Art and Expression in a Post-Apocalyptic World", "Survival Skills and Wilderness Medicine")) %>%
+  group_by(id, group, course) %>%
+  summarise(Average_Grade = mean(grade, na.rm = TRUE))
+
+pivoted_grades3 <- average_grades3 %>%
+  pivot_wider(names_from = course, values_from = Average_Grade)
+pivoted_grades3
+
+correlation_by_group <- pivoted_grades3 %>%
+  select(`Art and Expression in a Post-Apocalyptic World`, `Survival Skills and Wilderness Medicine`, group) %>%
+  group_by(group) %>%
+  summary(cor(pivoted_grades3$`Art and Expression in a Post-Apocalyptic World`, pivoted_grades3$`Survival Skills and Wilderness Medicine`))
+
+  correlation_by_group
+
+```
+
